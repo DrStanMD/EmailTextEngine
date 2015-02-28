@@ -4,6 +4,7 @@ var patientEmail;
 var ecnt;
 var initiated = false;
 var demoNo;
+var fid;
 
 //On load, initiate the EmailTextEngine variables
 window.addEventListener("load",function(){
@@ -11,7 +12,13 @@ window.addEventListener("load",function(){
 });
 
 function openConsentForm(){
-  openForm("Email Text Consent Form");
+  var consentFormWindow = openForm("Email Text Consent Form");
+  var fidClock = setInterval(function(){
+    if(fid!==null){
+      console.log(fid);      
+      clearInterval(fidClock);
+    }
+  }, 100);
 }
 
 //Open eForm by formName
@@ -29,12 +36,19 @@ function openForm(formName){
       //3)find the first <a> element that has the formName in its innerHTML
       if(a.innerHTML.indexOf(formName)>-1){
         //4) click that <a> then close this window
-        a.click();
-        eFormListWindow.close();
-        return;
+        var fidRe = /efmformadd_data\.jsp\?fid=(\d*)&/;
+        var actionScript = a.getAttribute("onclick");
+        var myArray;
+        if((myArray = fidRe.exec(actionScript))!== null){
+          fid = myArray[1];
+          newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformadd_data.jsp?fid="+fid+"&demographic_no="+demoNo;
+          this.close();
+          return window.open(newURL);
+        }
       }
     }
   }, false);
+ // return eFormListWindow;
 }
 
 // sending an email through Mandrill, needs an API key from www.mandrill.com
