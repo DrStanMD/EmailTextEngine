@@ -1,8 +1,10 @@
+//The following are Class Variables that gets initiated with when the window is loaded. 
 var patientCell;
 var patientEmail; 
 var ecnt;
 var initiated = false;
 
+//On load, initiate the EmailTextEngine variables
 window.addEventListener("load",function(){
   startETEngine();
 });
@@ -167,19 +169,21 @@ function getDemoNo(){
   return demoNo;
 }
 
+// Initiating the EmailTextEngine. 
 function startETEngine(){
+  //If it has been iniated already, do nothing further
   if(initiated)
     return;
-  debugger;
+  
+  //Inserting javascripts from the Image Library to the head of the page that is loading the EmailTextEngine.
   var head = document.getElementsByTagName("head")[0];
-  var script = document.createElement('script');
-  script.type = 'text/javascript';
-
   var pathArray = window.location.pathname.split( '/' );
+  
   var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/displayImage.do?imagefile=mandrill_nostringify.js";
- // var newURL = "https://mandrillapp.com/api/docs/js/mandrill.js";
-  script.src = newURL; 
-  head.appendChild(script);
+  var mandrill_script = document.createElement('script');
+  mandrill_script.type = 'text/javascript';
+  mandrill_script.src = newURL; 
+  head.appendChild(mandrill_script);
 
   newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/displayImage.do?imagefile=emailtextengine_credentials.js";
   var credential = document.createElement('script');
@@ -187,27 +191,33 @@ function startETEngine(){
   credential.src = newURL;
   head.appendChild(credential);
 
+  //Initiating patient's contact information and consent information
   getPatientEmailAndText();
-  ecnt = getECNTMeasurement();
+  getECNTMeasurement();
 
+  //Finding all EmailTextEngine buttons on the page
   var emailButtons = document.getElementsByName("EmailButton");
   var textButtons = document.getElementsByName("TextButton");
   var consentButtons = document.getElementsByName("ConsentButton");
 
+  //For the EmailButtons
   for(var i=0;i<emailButtons.length;i++){
     var emailButton = emailButtons[i];
+    //If it does exist
     if(emailButton!==null){
-      if(patientEmail==null||patientEmail.length<1){
-          emailButton.value = "No email on file";
-          emailButton.disabled = true;
-        }
-      else{
-        emailButton.value = "Email: "+patientEmail;
-      }
-
+      //if there is no consent for email, disable the button 
       if(!emailConsented()){
         emailButton.disabled = true;
         emailButton.value = "No email consent";
+      }
+      //but if the patient's email is not present in the EMR, disable the button
+      else if(patientEmail==null||patientEmail.length<1){
+          emailButton.value = "No email on file";
+          emailButton.disabled = true;
+      }
+      //only put patient's email on the button and leave it enabled if email exists and patient has consented
+      else{
+        emailButton.value = "Email: "+patientEmail;
       }
     }
   }
@@ -215,17 +225,16 @@ function startETEngine(){
   for (var i=0;i<textButtons.length;i++){
     var textButton = textButtons[i];
     if(textButton!==null){
-      if(patientCell==null||patientCell.length<1){
+      if(!textConsented()){
+        textButton.disabled = true;
+        textButton.value = "No text consent";
+      }
+      else if(patientCell==null||patientCell.length<1){
         textButton.value = "No cellphone on file";
         textButton.disabled = true;
       }
       else{
         textButton.value ="Text: "+patientCell;
-      }
-
-      if(!textConsented()){
-        textButton.disabled = true;
-        textButton.value = "No text consent";
       }
     }
   }
@@ -291,11 +300,17 @@ function makeTwilioFriendly(oldString){
   var newString = oldString.replace(/\D/g,'');
 
   //need to start with +1 followed by the 10 digit phone number
-  if(newString.length<11){
+  if(newString==null||newString.length==0)
+    return null;
+  if(newString.length==10){
     newString = '+1'+newString;
+    return newString;
   }
-  else{
+  else if(newString.length==11&&newString.charAt(0)=='1'){
     newString = '+'+newString;
+    return newString;
   }
-  return newString;
+
+  return null;
+  
 }
