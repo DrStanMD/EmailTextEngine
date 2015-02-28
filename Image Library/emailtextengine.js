@@ -123,7 +123,8 @@ function sendText(body){
   form.submit();
 }
 
-// getting the email from the patient's demographic data page
+// getting the email and cellphone from the patient's demographic data page https://___/___//demographic/demographiccontrol.jsp?displaymode=edit&dboperation=search_detail&demographic_no=____"
+// assigning the email and cellphone to global variables for the other methods to use 
 function getPatientEmailAndText(){
   var xmlhttp= new XMLHttpRequest();
   var pathArray = window.location.pathname.split( '/' );
@@ -148,13 +149,8 @@ function getPatientEmailAndText(){
   xmlhttp.send();
 }
 
-function getPatientEmail(){
-  if(patientEmail==null)
-    getPatientEmailAndText();
-  return patientEmail;
-}
-
-// finding the demographic number for the current patient by looking in the URL of this lab form
+// finding the demographic number in three ways: 1) finding demographic_no in URL, 2) finding demographicNo in URL, 3) finding demo= in the whole webpage
+// return the value found by 1); if 1) returned nothing, go to 2)'s value; if 1) and 2) returned nothing, go to 3)'s value. 
 function getDemoNo(){
   var myRe0 = /demographic_no=(\d*)[&^]/g;
   var myRe1 = /demographicNo=(\d*)[&^]/g;
@@ -210,18 +206,19 @@ function startETEngine(){
         emailButton.disabled = true;
         emailButton.value = "No email consent";
       }
-      //but if the patient's email is not present in the EMR, disable the button
+      //if they have consented, but if the patient's email is not present in the EMR, disable the button
       else if(patientEmail==null||patientEmail.length<1){
           emailButton.value = "No email on file";
           emailButton.disabled = true;
       }
-      //only put patient's email on the button and leave it enabled if email exists and patient has consented
+      //if they have consented and has an email on file, put the email on the button leave it enabled
       else{
         emailButton.value = "Email: "+patientEmail;
       }
     }
   }
 
+  //same logic as EmailButtons
   for (var i=0;i<textButtons.length;i++){
     var textButton = textButtons[i];
     if(textButton!==null){
@@ -242,18 +239,21 @@ function startETEngine(){
   for (var i=0;i<consentButtons.length;i++){
     var consentButton = consentButtons[i];
     if(consentButton!==null){
+      // if the ECNT value is "none", it means the patient has indicated that they do not want to receive email or phone calls
       if(ecnt=="none"){
         consentButton.value = "Do NOT email or text (click to change consent)";
       }
+      // if there is no previous ECNT information, the patient hasn't been asked
       else if(ecnt==null||ecnt==""){
         consentButton.value = "Get Consent first";
       }
     }
   }
-  
+
   initiated = true;
 }
 
+// if the ecnt value is "email" or "both", then the patient has consented to receive emails
 function emailConsented(){
   if(ecnt==null||!ecnt.length>0)
     return false;
@@ -263,6 +263,7 @@ function emailConsented(){
     return false;
 }
 
+// if the ecnt value is "text" or "both", then the patient has consented to receive texts
 function textConsented(){
   if(ecnt==null||!ecnt.length>0)
     return false;
@@ -272,6 +273,8 @@ function textConsented(){
     return false;
 }
 
+
+// getting the measurement value by visiting the http://__/__/oscarEncounter/oscarMeasurements/SetupDisplayHistory.do?type=ECNT page
 function getECNTMeasurement(){
   var emailConsent;
   var xmlhttp= new XMLHttpRequest();
@@ -281,6 +284,8 @@ function getECNTMeasurement(){
     if (xmlhttp.readyState==4 && xmlhttp.status==200){
       var str=xmlhttp.responseText; 
       if (!str) { return; }
+
+      // this method relies on the most current ECNT value being in the first <td width="10">___</td> tag on the page
       var myRe = /<td width="10">(.*)<\/td>/;  
       var myArray;
       var i=0;
@@ -291,8 +296,7 @@ function getECNTMeasurement(){
   }
   xmlhttp.open("GET",newURL,false);
   xmlhttp.send();
-  ecnt= emailConsent;
-  return ecnt;
+  ecnt = emailConsent;
 }
 
 function makeTwilioFriendly(oldString){
@@ -310,7 +314,5 @@ function makeTwilioFriendly(oldString){
     newString = '+'+newString;
     return newString;
   }
-
   return null;
-  
 }
