@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="description" content="An example of using the ETEngine in an eForm.">
+  <meta name="namespace" content="http://dev.drbillylin.com/oscarwiki">
+  <meta name="author" content="Billy Lin">
+  <title>Email and Text eForm Example</title>
+  <style type="text/css">
+    #MessageBox{
+    	width:300px;
+    	height:200px;
+    }
+  </style>
+
+  <!-- This adds the EmailTextEngine onto eForms -->
+  <script type="text/javascript" src="${oscar_image_path}emailtextengine.js"></script>
+    
+  <script type="text/javascript">
+    function emailButtonClick(){
+      var subject = 'Email from Your Family Doctor';    //Change this to fit the clinic's preferred Email subject
+      var body = document.getElementById("MessageBox").value;
+      sendEmail(subject, body);
+    }
+
+    function textButtonClick(){
+      var body = document.getElementById("MessageBox").value;
+      sendText(body);
+    }
+
+    window.addEventListener('load', function(){
+      document.getElementById("MessageBox").select();
+    });
+  </script>
+</head>
+
+<body>
+  <textarea id="MessageBox" rows="10" cols="100" >Please enter your email or text message here.</textarea>
+  <input type = "button" value = "Email" id="EmailButton" name="EmailButton" onclick="emailButtonClick()">
+  <input type = "button" value = "Text" id="TextButton" name="TextButton" onclick="textButtonClick()">
+  <input type = "button" value = "Update Consent" id="ConsentButton" name="ConsentButton" onclick="openConsentForm()">
+</body>
+</html>
