@@ -154,9 +154,9 @@ function getPatientEmailAndText(){
 // finding the demographic number in three ways: 1) finding demographic_no in URL, 2) finding demographicNo in URL, 3) finding demo= in the whole webpage
 // return the value found by 1); if 1) returned nothing, go to 2)'s value; if 1) and 2) returned nothing, go to 3)'s value. 
 function getDemoNo(){
-  var myRe0 = /demographic_no=(\d*)[&^]/g;
-  var myRe1 = /demographicNo=(\d*)[&^]/g;
-  var myRe2 = /demo=(\d*)[&^]/g;
+  var myRe0 = /demographic_no=(\d*)[&$]/g;
+  var myRe1 = /demographicNo=(\d*)[&$]/g;
+  var myRe2 = /demo=(\d*)[&$]/g;
   var results0 = myRe0.exec(document.URL);
   var results1 =  myRe1.exec(document.URL);
   var results2 =  myRe2.exec(document.body.innerHTML);
