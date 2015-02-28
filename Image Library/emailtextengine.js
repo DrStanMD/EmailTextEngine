@@ -1,4 +1,4 @@
-//The following are Class Variables that gets initiated with when the window is loaded. 
+//The following are Global Variables that gets initiated with when the window is loaded. 
 var patientCell;
 var patientEmail; 
 var ecnt;
@@ -9,16 +9,25 @@ window.addEventListener("load",function(){
   startETEngine();
 });
 
+function openConsentForm(){
+  openForm("Email Text Consent Form");
+}
+
+//Open eForm by formName
 function openForm(formName){
+  //1) open the eForm list window
   var pathArray = window.location.pathname.split( '/' );
   var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformslistadd.jsp?demographic_no="+getDemoNo();
   var eFormListWindow = window.open(newURL);
 
   eFormListWindow.addEventListener("load", function(){
+    //2) find all <a> elements
     var a_array = this.document.links;
     for(var i=0;i<a_array.length;i++){
       var a = a_array[i];
+      //3)find the first <a> element that has the formName in its innerHTML
       if(a.innerHTML.indexOf(formName)>-1){
+        //4) click that <a> then close this window
         a.click();
         eFormListWindow.close();
         return;
@@ -27,51 +36,44 @@ function openForm(formName){
   }, false);
 }
 
-function openConsentForm(){
-  openForm("Email Text Consent Form");
-}
-
 // sending an email through Mandrill, needs an API key from www.mandrill.com
 function sendEmail(newsubject, newbody){
+  // if the Engine has not started, start it
   if(!initiated)
     startETEngine();
-
-  var m = new mandrill.Mandrill(get_mandrill_api_key());
-
+  // if there is no email consent, do NOT continue
   if(!emailConsented()){
     alert("No email consent");
     return;
   }
-
+  // confirm that the user really wants to send an email to the patient
   var confirmSend = confirm("Sending: \""+newbody+"\" to "+patientEmail);
   if(!confirmSend){
     return;
   }
 
+  var m = new mandrill.Mandrill(get_mandrill_api_key());
+
   var params = {
     "message": {
       "from_email":get_sender_email(),
-      "to": [
-            {
-                "email": patientEmail,
-                "type": "to"
-            }
-        ],
+      "to": [{"email": patientEmail}],
       "subject": newsubject,
       "text": newbody
     }
   };
   m.messages.send(params, function(res){
-    if (res[0]["status"]=="sent"){
+    if (res[0]["status"]=="sent"){      //email successfully sent
       alert("Email sent to "+patientEmail+". Message: "+newbody);
     }
-  }, function(err){
+  }, function(err){                     //email could not be sent
     console.log(err);
     alert("Email send error:"+err);
   });
 }
 
 function sendText(body){
+  //same logic as sendEmail()
   if(!initiated)
     startETEngine();
 
@@ -79,7 +81,6 @@ function sendText(body){
     alert("No text consent");
     return;
   }
-
   var confirmSend = confirm("Sending: \""+body+"\" to "+patientCell);
   if(!confirmSend){
     return;
@@ -89,6 +90,7 @@ function sendText(body){
   var twilio_auth = get_twilio_auth();
   var url = "https://"+twilio_id+":"+twilio_auth+"@api.twilio.com/2010-04-01/Accounts/"+twilio_id+"/Messages";
 
+  //using a form in a hidden iframe to send a POST to Twilio Server. Please suggest improvement if you have a simpler way to send to twilio.
   var form = document.createElement("form");
   form.setAttribute("method", "POST");
   form.setAttribute("action", url);
