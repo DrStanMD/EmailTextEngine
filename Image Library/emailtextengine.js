@@ -3,6 +3,7 @@ var patientCell;
 var patientEmail; 
 var ecnt;
 var initiated = false;
+var demoNo;
 
 //On load, initiate the EmailTextEngine variables
 window.addEventListener("load",function(){
@@ -17,7 +18,7 @@ function openConsentForm(){
 function openForm(formName){
   //1) open the eForm list window
   var pathArray = window.location.pathname.split( '/' );
-  var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformslistadd.jsp?demographic_no="+getDemoNo();
+  var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformslistadd.jsp?demographic_no="+demoNo;
   var eFormListWindow = window.open(newURL);
 
   eFormListWindow.addEventListener("load", function(){
@@ -130,14 +131,13 @@ function sendText(body){
 function getPatientEmailAndText(){
   var xmlhttp= new XMLHttpRequest();
   var pathArray = window.location.pathname.split( '/' );
-  var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/demographic/demographiccontrol.jsp?displaymode=edit&dboperation=search_detail&demographic_no="+getDemoNo();
+  var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/demographic/demographiccontrol.jsp?displaymode=edit&dboperation=search_detail&demographic_no="+demoNo;
   xmlhttp.onreadystatechange=function(){
     if (xmlhttp.readyState==4 && xmlhttp.status==200){
       var str=xmlhttp.responseText; 
       if (!str) { return; }
       var myRe = /Email:<\/span>\n\s*<span class="info">(.*)<\/span>/i;  
       var myArray;
-      var i=0;
       if((myArray = myRe.exec(str))!== null){
         patientEmail = myArray[1];
       }   
@@ -163,7 +163,7 @@ function getDemoNo(){
 
   var myArray = results0 || results1 || results2;
 
-  var demoNo = myArray[1];
+  demoNo = myArray[1];
   return demoNo;
 }
 
@@ -190,6 +190,7 @@ function startETEngine(){
   head.appendChild(credential);
 
   //Initiating patient's contact information and consent information
+  getDemoNo();
   getPatientEmailAndText();
   getECNTMeasurement();
 
