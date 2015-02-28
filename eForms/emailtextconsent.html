@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta name="description" content="Obtaining patient consent for receiving email or text communication. Requires [ecnt] measurement in OSCAR EMR. Do not change the name of this eform.">
+	<meta name="namespace" content="http://dev.drbillylin.com/oscarwiki">
+	<meta name="author" content="Billy Lin">
+	<title>Email and/or Text Communication Consent Form</title>
+	<style type="text/css">
+		/* This chunk is styling the fancy radio buttons. Adapted from: http://cssdeck.com/labs/ldmtsmfk */
+		body {
+			font-family: sans-serif;
+			font-weight: normal;
+			margin: 10px;
+			font-size:0.8em;
+		}
+
+		form {
+			margin: 40px 0;
+		}
+
+		label {
+		  width: 90%;
+		  border-radius: 3px;
+		  border: 1px solid #D1D3D4;
+		  min-width:450px;
+		}
+
+		/* hide input */
+		input.radio:empty {
+			margin-left: -9999px;
+		}
+
+		/* style label */
+		input.radio:empty ~ label {
+			position: relative;
+			float: left;
+			line-height: 1.5em;
+			text-indent: 4.25em;
+			margin-top: 0.5em;
+			cursor: pointer;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+
+		input.radio:empty ~ label:before {
+			position: absolute;
+			display: block;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			content: '';
+			width: 2.5em;
+			background: #D1D3D4;
+			border-radius: 3px 0 0 3px;
+		    font-size:1.5em;
+		}
+
+		/* toggle hover */
+		input.radio:hover:not(:checked) ~ label:before {
+			content:'\2714';
+		  font-size:1.5em;
+			text-indent: .9em;
+			color: #C2C2C2;
+		}
+
+		input.radio:hover:not(:checked) ~ label {
+			color: #888;
+		}
+
+		/* toggle on */
+		input.radio:checked ~ label:before {
+			content:'x';
+		  font-size:1.5em;
+			text-indent: 0.9em;
+			color: #9CE2AE;
+			background-color: #4DCB6D;
+		}
+
+		input.radio:checked ~ label {
+
+		}
+
+		/* radio focus */
+		input.radio:focus ~ label:before {
+			box-shadow: 0 0 0 3px #999;
+		}
+
+	</style>
+
+	<style type="text/css">
+
+		h1{
+			text-align:center;
+		}
+		h3{
+			text-align:center;
+		}
+
+		#patient_choices{
+			float:right;
+			width:60%;
+		}
+
+		.no_overflow{
+			overflow:hidden;
+		}
+
+		#contact_div{
+			float:left;
+			max-width:300px;
+		}
+
+		#FunctionButtons{
+			float:left;
+		}
+
+		#clinic_label{
+			border-style:solid; 
+			border-width:3;
+			width: 100%;
+		}
+		#consent_info{
+			float:left;
+		}
+		#ClinicName{
+			font-size:30; 
+			width: 100%; 
+			text-align:center;
+		}
+
+		#ClinicAddressLine{
+			font-size:10; 
+			width:100%; 
+			text-align: center;
+		}
+		#ClinicPhone, #ClinicFax{
+			font-size:10; 
+			text-align:left; 
+			width:75;
+		}
+		.noborder{
+			border-style:none;
+		}
+		.top_space{
+			margin-top: 10px;
+		}
+		.demoInfo{
+			display:block;
+		}
+
+	</style>
+
+	<style type="text/css" media="print">
+		.DoNotPrint {
+			display: none;
+		}
+
+		.noborder {
+			scrollbar-3dlight-color: transparent;
+			scrollbar-3dlight-color: transparent;
+			scrollbar-arrow-color: transparent;
+			scrollbar-base-color: transparent;
+			scrollbar-darkshadow-color: transparent;
+			scrollbar-face-color: transparent;
+			scrollbar-highlight-color: transparent;
+			scrollbar-shadow-color: transparent;
+			scrollbar-track-color: transparent;
+			background: transparent;
+			overflow: hidden;
+			border : 0px;
+		}
+	</style>
+	<script language="javascript" type="text/javascript">
+		function updateConsentMeasurement(){
+			if(document.getElementById("email_consented").checked){
+				document.getElementById("consent_measurement").value = "email";
+			}
+			else if(document.getElementById("text_consented").checked){
+				document.getElementById("consent_measurement").value = "text";
+			}
+			else if(document.getElementById("both_consented").checked){
+				document.getElementById("consent_measurement").value = "both";
+			}
+			else{
+				document.getElementById("consent_measurement").value = "none";
+			}
+		}
+
+		window.addEventListener("load",function(){
+			console.log("loaded");
+
+			//if there was a previous consent, check the right radio button accordingly
+			var prevConsent = document.getElementById("consent_measurement").value;
+			console.log(prevConsent);
+			if(prevConsent!==null && prevConsent.length>0){
+				if(prevConsent=="email"){
+					document.getElementById("email_consented").setAttribute("checked", true);
+				}
+				else if(prevConsent=="text"){
+					document.getElementById("text_consented").setAttribute("checked", true);
+				}
+				else if(prevConsent=="both"){
+					document.getElementById("both_consented").setAttribute("checked", true);
+				}
+				else {
+					document.getElementById("none_consented").setAttribute("checked", true);
+				}
+			}
+
+			//document.getElementById("ptemail").innerHTML = getPatientEmail();
+
+			document.getElementById("demoLink").setAttribute("href", "../demographic/demographiccontrol.jsp?demographic_no="+findDemoNo()+"&displaymode=edit&dboperation=search_detail");
+
+			// var ptname = document.getElementById("ptname").value;
+			// var ptadd = document.getElementById("ptadd").value;
+			// var dob = document.getElementById("dob").value;
+			// var ptcell = document.getElementById("ptcell").value;
+			var ptemail = getPatientEmail();
+			debugger;
+			// var patientContactInfo = ptname+"<br>"+dob+"<br>"+ptadd+"<br>"+"Email: "+ptemail+"<br>Cell: "+ptcell;
+			// document.getElementById("contact_info").innerHTML = patientContactInfo;
+			
+			
+		});
+		// getting the email from the patient's demographic data page
+		function getPatientEmail(){
+			var patientEmail;
+			xmlhttp= new XMLHttpRequest();
+			var pathArray = window.location.pathname.split( '/' );
+			var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/demographic/demographiccontrol.jsp?displaymode=edit&dboperation=search_detail&demographic_no="+findDemoNo();
+			xmlhttp.onreadystatechange=function(){
+				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+					var str=xmlhttp.responseText; 
+					if (!str) { return; }
+					var myRe = /Email:<\/span>\n\s*<span class="info">(.*)<\/span>/i;  
+					var myArray;
+					var i=0;
+					if((myArray = myRe.exec(str))!== null){
+						patientEmail = myArray[1];
+						console.log(patientEmail);
+					}		
+				}
+			}
+			xmlhttp.open("GET",newURL,false);
+			xmlhttp.send();
+
+			document.getElementById("ptemail").value = patientEmail;
+			return patientEmail;
+		}
+			// finding the demographic number for the current patient by looking in the URL of this lab form
+		function findDemoNo(){
+			var myRe = /demographic_no=(\d*)&/g;
+			var myArray = myRe.exec(window.location);
+			console.log("window location"+window.location);
+			var demoNo = myArray[1];
+			return demoNo;
+		}
+	</script>
+</head>
+
+<body>
+
+	<!-- OPTIONAL TO INCLUDE A CLINIC HEADER
+	<table id="clinic_label">
+		<tr>
+			<td colspan=4>
+				<input id="ClinicName" name="ClinicName" type="text" class="noborder" oscardb=clinic_name >
+			</td>
+		</tr>
+		<tr>
+			<td colspan=4 align="center">
+				<input id="ClinicAddressLine" name="ClinicAddressLine" type="text" class="noborder"  oscarDB=clinic_addressLineFull>
+			</td>
+		</tr>
+		<tr align="center">
+			<td colspan="4" align="center" class="noborder" style="font-size:10;">
+				 Ph: <input id="ClinicPhone" name="ClinicPhone" type="text" class="noborder" oscarDB=clinic_phone>
+				 Fax: <input id="ClinicFax" name="ClinicFax" type="text" class="noborder" oscarDB=clinic_fax>
+			</td>
+		</tr>
+	</table>
+	-->
+
+	<form id="consent_form" name="FormName" action="">
+
+		<h1>Email and Texting Communication Consent Form</h1>
+
+		<div id="contact_div">
+			<div id="contact_info" class="top_space"></div>
+			<input type="text" id="ptname" name="ptname" oscarDB=patient_name class="noborder demoInfo">
+			<input type="text"  id="dob" name="dob" oscarDB=dob class="noborder demoInfo">
+			<input type="text"  id="ptadd" name="ptadd" oscarDB=address class="noborder demoInfo">
+			<input type="text"  id="ptcell" name="ptcell" oscarDB=cell class="noborder demoInfo">
+			<input type="text" id="ptemail" name="ptemail" class="noborder demoInfo">
+
+			<div><a id="demoLink">Edit demographic data</a></div>
+		</div>
+
+		<div id="patient_choices" class="no_overflow">
+			<div class="no_overflow">
+				<input id="email_consented" name="choice" type="radio" class="radio" onclick="updateConsentMeasurement();">
+				<label for="email_consented">I consent to receiving <em>emails</em>.</label>
+			</div>
+			<div class="no_overflow">
+				<input id="text_consented" name="choice" type="radio" class="radio" onclick="updateConsentMeasurement();">
+				<label for="text_consented">I consent to receiving <em>cellphone texts</em>.</label>
+			</div>
+			<div class="no_overflow">
+				<input id="both_consented" name="choice" type="radio" class="radio" onclick="updateConsentMeasurement();">
+				<label for="both_consented">I consent to receiving <em>both</em> emails and cellphone texts.</label>
+			</div>
+			<div class="no_overflow">
+				<input id="none_consented" name="choice" type="radio" class="radio" onclick="updateConsentMeasurement();">
+				<label for="none_consented">I <em>DO NOT</em> consent to receiving email nor cellphone texts.</label>
+			</div>
+		</div>
+
+		<input id="consent_measurement" type="hidden" name=m$ecnt#value oscardb=m$ecnt#value>
+
+		<div id="FunctionButtons" name="FunctionButtons" class="DoNotPrint top_space">
+			<table>
+				<tr>
+					<td class="subjectline">
+						Subject: <input name="subject" size="40" type="text">
+						<input value="Submit" name="SubmitButton" type="submit">
+						<input value="Reset" name="ResetButton" type="reset">
+						<input value="Print" name="PrintButton" onclick="javascript:window.print()" type="button">
+						<input value="Print and Submit" name="PrintSubmitButton" onclick="javascript:window.print();setTimeout('document.FormName.submit()',1000);" type="button">
+
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div id="consent_info" class="top_space">
+			<p>You have been offered the opportunity to receive communication by email or text messaging.
+			This will be ONE way communication only (physician or physician staff to patient) and return emails or text messages will not be reviewed by the office.
+			In receiving this consent form and providing your email and or cell phone number, you acknowledge that you have or will read and fully understand this consent form. You acknowledge that you understand the risks associated with the communication of email or text messaging between the physician and yourself, and consent to the conditions outlined herein, as well as any other instructions that the physician may impose to communicate with patients by email or text messaging. You acknowledge the physicians right to withdraw the option of communicating through email or text messaging. If you have any further questions or would like to withdraw your consent for this electronic communication you can do this by contacting one of the staff or speaking with your physician.
+			Transmitting patient information poses several risks of which you should be aware. You should not agree to communicate via email or text messaging without understanding and accepting these risks.</p>
+
+			<h1>The risks include, but are not limited to, the following:</h1>
+			<ul>
+				<li>The privacy and security of email communication and text messaging cannot be guaranteed.
+				<li>Employers and online services may have a legal right to inspect and keep emails or text messages that pass through their system.
+				<li>Email and text messaging are easier to falsify than handwritten or signed hard copies. In addition, it is impossible to verify the true identity of the sender, or to ensure that only the recipient can read the email or text message once it has been sent.
+				<li>Emails can introduce viruses into a computer system, and potentially damage or disrupt the computer.
+				<li>Email or text messages can be forwarded, intercepted, circulated, stored or even changed without the knowledge or permission of the physician or the patient.
+				<li>Senders can easily misaddress an email or text message, resulting in it being sent to many unintended and unknown recipients.
+				<li>Email and text messages may be indelible. Even after the sender and recipient have deleted their copies of the email or text message, back-up copies may exist on a computer or in cyberspace.
+				<li>Use of email or text messages to discuss sensitive information can increase the risk of such information being disclosed to third parties.
+				<li>Email or text messages can be used as evidence in court.
+				<li>This email or text messaging does not use encryption software which increases the risk of violation of your privacy.
+				<li>Emails or text messages to you may be made part of your medical record. 
+			</ul>
+			<h3>Conditions of using email</h3>
+			<ul>
+				<li>The physician will use reasonable means to protect the security and confidentiality of email or text messaging information sent and received. However, because of the risks outlined above, the physician cannot guarantee the security and confidentiality of email or text messaging communication.
+				<li>Patients must consent to the use of email and or text messaging for patient information before it can be used.
+				<li>Email communication is not an appropriate substitute for clinical examinations. You are responsible for following up on the email or text message and for scheduling appointments where warranted.
+				<li>If you are expecting communication by email or text messaging and you do not receive this within a reasonable time period it is your responsibility to follow up by contacting the office.
+				<li>The physician is not responsible for information loss due to technical failures associated with the patients email software or internet service provider.
+				<li>You are responsible to inform the physicians office of any changes in your email address or cell phone number.
+				<li>You are responsible to take precautions to preserve the confidentiality of emails and text messages, such as using screen savers and safeguarding computer or cell phone passwords. 
+			</ul>
+		</div>
+
+		<!-- OPTIONAL LINES FOR ASKING FOR SIGNATURES
+		<div id="signatures">
+			<div id="ptsign" class="top_space">Patient signature:	____________________________________________</div>
+			<div id="drsign" class="top_space">Consent taken by:	____________________________________________</div>
+
+		</div> -->
+
+	</form>
+
+</body>
+
+</html>
