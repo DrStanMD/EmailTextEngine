@@ -16,13 +16,13 @@ function openConsentForm(){
 }
 
 function openFid(fid, destination){
-
   var pathArray = window.location.pathname.split( '/' );
   var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformadd_data.jsp?fid="+fid+"&demographic_no="+demoNo;
   return window.open(newURL, destination);
 }
-//Open eForm by formName
+//Open eForm by formName. This is a redundant method that should probably be replaced by findFID and openFID in the future
 function openForm(formName){
+  //Since we already found the FID for "Email Text Consent Form", no need to go through the rest if that's what the user wants.
   if(formName =="Email Text Consent Form"){
     openFid(fid);
     return;
@@ -55,24 +55,27 @@ function openForm(formName){
   }, false);
 }
 
+//Finding the FID of the eForm with formName
 function findFID(formName){
+  //1) open the eForm List window in a hidden iframe so that the user does not see a window being opened and closed quickly
   var pathArray = window.location.pathname.split( '/' );
   var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformslistadd.jsp?demographic_no="+demoNo;
   var eFormListWindow = window.open(newURL, "hiddenWin");
   
   document.getElementById("hiddenWin").onload = function(){
-    //2) find all <a> elements
+    //2) find all <a> elements in the hiddenWin iFrame containing the eFormListWindow 
     var a_array = document.getElementById("hiddenWin").contentDocument.links;
     for(var i=0;i<a_array.length;i++){
       var a = a_array[i];
       //3)find the first <a> element that has the formName in its innerHTML
       if(a.innerHTML.indexOf(formName)>-1){
-        //4) click that <a> then close this window
+        //4) parse out the fid from this <a> element's action script
         var fidRe = /efmformadd_data\.jsp\?fid=(\d*)&/;
         var actionScript = a.getAttribute("onclick");
         var myArray;
         if((myArray = fidRe.exec(actionScript))!== null){
           fid = myArray[1];
+          //5) this is a lazy way to go look for the ECNT measurement using the recently found fid. 
           if(ecnt==null){
             getECNTMeasurement();
           }
@@ -214,7 +217,6 @@ function getDemoNo(){
 
 // Initiating the EmailTextEngine. 
 function startETEngine(){
-  debugger;
   //If it has been iniated already, do nothing further
   if(initiated)
     return;
@@ -282,12 +284,12 @@ function textConsented(){
 }
 
 
-// getting the measurement value by visiting the http://__/__/oscarEncounter/oscarMeasurements/SetupDisplayHistory.do?type=ECNT page
+//getting the ecnt measurement value by going to the Email Text Consent Form which used eForm magic to get the value into: <input id="consent_measurement" type="hidden" name=m$ecnt#value oscardb=m$ecnt#value>
 function getECNTMeasurement(){
   var consentWindow = openFid(fid, "hiddenWin2");
   document.getElementById("hiddenWin2").onload = function(){
     ecnt = consentWindow.document.getElementById("consent_measurement").value;
-    console.log("ecnt: "+ecnt);
+    // after getting the ECNT measurement, we can change the EmailTextEngine buttons
     changeButtons();
   }
 }
