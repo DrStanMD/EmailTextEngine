@@ -12,21 +12,36 @@ window.addEventListener("load",function(){
 });
 
 function openConsentForm(){
-  var consentFormWindow = openForm("Email Text Consent Form");
-  var fidClock = setInterval(function(){
-    if(fid!==null){
-      console.log(fid);      
-      clearInterval(fidClock);
-    }
-  }, 100);
+  debugger;
+  // var consentFormWindow = openForm("Email Text Consent Form");
+  openFid(fid);
+
+  // var fidClock = setInterval(function(){
+  //   if(fid!==null){
+  //     console.log(fid);   
+  //     // consentFormWindow.close();   
+  //     clearInterval(fidClock);
+  //   }
+  // }, 100);
 }
 
+function openFid(fid, destination){
+
+  var pathArray = window.location.pathname.split( '/' );
+  var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformadd_data.jsp?fid="+fid+"&demographic_no="+demoNo;
+  return window.open(newURL, destination);
+}
 //Open eForm by formName
 function openForm(formName){
+  if(formName =="Email Text Consent Form"){
+    openFid(fid);
+    return;
+  }
   //1) open the eForm list window
   var pathArray = window.location.pathname.split( '/' );
   var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformslistadd.jsp?demographic_no="+demoNo;
   var eFormListWindow = window.open(newURL);
+  var consentFormWindow;
 
   eFormListWindow.addEventListener("load", function(){
     //2) find all <a> elements
@@ -43,12 +58,67 @@ function openForm(formName){
           fid = myArray[1];
           newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformadd_data.jsp?fid="+fid+"&demographic_no="+demoNo;
           this.close();
-          return window.open(newURL);
+          consentFormWindow= window.open(newURL);
         }
       }
     }
   }, false);
  // return eFormListWindow;
+ // return consentFormWindow;
+}
+
+function findFID(formName){
+  var pathArray = window.location.pathname.split( '/' );
+  var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformslistadd.jsp?demographic_no="+demoNo;
+  var eFormListWindow = window.open(newURL, "hiddenWin");
+  //var consentFormWindow;
+
+  //eFormListWindow.addEventListener("load", function(){
+    document.getElementById("hiddenWin").onload = function(){
+    //2) find all <a> elements
+    //var a_array = this.document.links;
+    var a_array = document.getElementById("hiddenWin").contentDocument.links;
+    for(var i=0;i<a_array.length;i++){
+      var a = a_array[i];
+      //3)find the first <a> element that has the formName in its innerHTML
+      if(a.innerHTML.indexOf(formName)>-1){
+        //4) click that <a> then close this window
+        var fidRe = /efmformadd_data\.jsp\?fid=(\d*)&/;
+        var actionScript = a.getAttribute("onclick");
+        var myArray;
+        if((myArray = fidRe.exec(actionScript))!== null){
+          fid = myArray[1];
+          //newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformadd_data.jsp?fid="+fid+"&demographic_no="+demoNo;
+          //this.close();
+          if(ecnt==null){
+            getECNTMeasurement();
+          }
+          // consentFormWindow= window.open(newURL);
+          // consentFormWindow.close();
+        }
+      }
+    }
+  //}, false);
+}
+
+  // xmlhttp= new XMLHttpRequest();
+  // var pathArray = window.location.pathname.split( '/' );
+  // var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformslistadd.jsp?demographic_no="+demoNo;
+  // xmlhttp.onreadystatechange=function(){
+  //   if (xmlhttp.readyState==4 && xmlhttp.status==200){
+  //     var str=xmlhttp.responseText; //local variable
+  //     console.log(str);
+  //     if (!str) { return; }
+  //     var myRe = new RegExp("efmformadd_data\.jsp\?fid=(\d*)&demographic_no.*\n\s*"+formName,"i");  //for the measurement
+  //     var myArray;
+  //     myArray = myRe.exec(str);
+  //     if(myArray!==null){
+  //       fid = myArray[1];
+  //     }
+  //   }
+  // }
+  // xmlhttp.open("GET",newURL,false);
+  // xmlhttp.send();
 }
 
 // sending an email through Mandrill, needs an API key from www.mandrill.com
@@ -183,10 +253,27 @@ function getDemoNo(){
 
 // Initiating the EmailTextEngine. 
 function startETEngine(){
+  debugger;
   //If it has been iniated already, do nothing further
   if(initiated)
     return;
-  
+
+  // Insert iFrame to hide the windows
+  var myframe = document.createElement("iframe");
+  myframe.name = "hiddenWin";
+  myframe.id = "hiddenWin";
+  myframe.height="0px";
+  myframe.width="0px";
+  myframe.setAttribute("hidden",true);
+  var myframe2 = document.createElement("iframe");
+  myframe2.name = "hiddenWin2";
+  myframe2.id = "hiddenWin2";
+  myframe2.height="0px";
+  myframe2.width="0px";
+  myframe2.setAttribute("hidden",true);
+  document.getElementsByTagName("body")[0].appendChild(myframe);
+  document.getElementsByTagName("body")[0].appendChild(myframe2);
+
   //Inserting javascripts from the Image Library to the head of the page that is loading the EmailTextEngine.
   var head = document.getElementsByTagName("head")[0];
   var pathArray = window.location.pathname.split( '/' );
@@ -205,9 +292,82 @@ function startETEngine(){
 
   //Initiating patient's contact information and consent information
   getDemoNo();
+  
+  
+  findFID("Email Text Consent Form");
+  
+  //getECNTMeasurement();
+  // while(fid==null){
+  //   setTimeout(function(){},100);
+  // }
+  //console.log(fid);
   getPatientEmailAndText();
-  getECNTMeasurement();
+  //getECNTMeasurement();
 
+  
+
+  initiated = true;
+}
+
+// if the ecnt value is "email" or "both", then the patient has consented to receive emails
+function emailConsented(){
+  if(ecnt==null||!ecnt.length>0)
+    return false;
+  if(ecnt.indexOf("email")>-1||ecnt.indexOf("both")>-1)
+    return true;
+  else
+    return false;
+}
+
+// if the ecnt value is "text" or "both", then the patient has consented to receive texts
+function textConsented(){
+  if(ecnt==null||!ecnt.length>0)
+    return false;
+  if(ecnt.indexOf("text")>-1||ecnt.indexOf("both")>-1)
+    return true;
+  else
+    return false;
+}
+
+
+// getting the measurement value by visiting the http://__/__/oscarEncounter/oscarMeasurements/SetupDisplayHistory.do?type=ECNT page
+function getECNTMeasurement(){
+  //var emailConsent;
+
+  var consentWindow = openFid(fid, "hiddenWin2");
+  
+  //consentWindow.addEventListener("load", function(){
+    document.getElementById("hiddenWin2").onload = function(){
+    ecnt = consentWindow.document.getElementById("consent_measurement").value;
+    console.log("ecnt: "+ecnt);
+    changeButtons();
+    //this.close();
+ // }, false);
+}
+
+  // var xmlhttp= new XMLHttpRequest();
+  // var pathArray = window.location.pathname.split( '/' );
+  // var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/oscarEncounter/oscarMeasurements/SetupDisplayHistory.do?type=ECNT";
+  // xmlhttp.onreadystatechange=function(){
+  //   if (xmlhttp.readyState==4 && xmlhttp.status==200){
+  //     var str=xmlhttp.responseText; 
+  //     if (!str) { return; }
+
+  //     // this method relies on the most current ECNT value being in the first <td width="10">___</td> tag on the page
+  //     var myRe = /<td width="10">(.*)<\/td>/;  
+  //     var myArray;
+  //     var i=0;
+  //     if((myArray = myRe.exec(str))!== null){
+  //       emailConsent = myArray[1];
+  //     }   
+  //   }
+  // }
+  // xmlhttp.open("GET",newURL,false);
+  // xmlhttp.send();
+  // ecnt = emailConsent;
+}
+
+function changeButtons(){
   //Finding all EmailTextEngine buttons on the page
   var emailButtons = document.getElementsByName("EmailButton");
   var textButtons = document.getElementsByName("TextButton");
@@ -266,54 +426,6 @@ function startETEngine(){
       }
     }
   }
-
-  initiated = true;
-}
-
-// if the ecnt value is "email" or "both", then the patient has consented to receive emails
-function emailConsented(){
-  if(ecnt==null||!ecnt.length>0)
-    return false;
-  if(ecnt.indexOf("email")>-1||ecnt.indexOf("both")>-1)
-    return true;
-  else
-    return false;
-}
-
-// if the ecnt value is "text" or "both", then the patient has consented to receive texts
-function textConsented(){
-  if(ecnt==null||!ecnt.length>0)
-    return false;
-  if(ecnt.indexOf("text")>-1||ecnt.indexOf("both")>-1)
-    return true;
-  else
-    return false;
-}
-
-
-// getting the measurement value by visiting the http://__/__/oscarEncounter/oscarMeasurements/SetupDisplayHistory.do?type=ECNT page
-function getECNTMeasurement(){
-  var emailConsent;
-  var xmlhttp= new XMLHttpRequest();
-  var pathArray = window.location.pathname.split( '/' );
-  var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/oscarEncounter/oscarMeasurements/SetupDisplayHistory.do?type=ECNT";
-  xmlhttp.onreadystatechange=function(){
-    if (xmlhttp.readyState==4 && xmlhttp.status==200){
-      var str=xmlhttp.responseText; 
-      if (!str) { return; }
-
-      // this method relies on the most current ECNT value being in the first <td width="10">___</td> tag on the page
-      var myRe = /<td width="10">(.*)<\/td>/;  
-      var myArray;
-      var i=0;
-      if((myArray = myRe.exec(str))!== null){
-        emailConsent = myArray[1];
-      }   
-    }
-  }
-  xmlhttp.open("GET",newURL,false);
-  xmlhttp.send();
-  ecnt = emailConsent;
 }
 
 function makeTwilioFriendly(oldString){
