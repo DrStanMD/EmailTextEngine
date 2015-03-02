@@ -209,21 +209,9 @@
 					document.getElementById("none_consented").setAttribute("checked", true);
 				}
 			}
-
-			//document.getElementById("ptemail").innerHTML = getPatientEmail();
-
 			document.getElementById("demoLink").setAttribute("href", "../demographic/demographiccontrol.jsp?demographic_no="+findDemoNo()+"&displaymode=edit&dboperation=search_detail");
 
-			// var ptname = document.getElementById("ptname").value;
-			// var ptadd = document.getElementById("ptadd").value;
-			// var dob = document.getElementById("dob").value;
-			// var ptcell = document.getElementById("ptcell").value;
 			var ptemail = getPatientEmail();
-			debugger;
-			// var patientContactInfo = ptname+"<br>"+dob+"<br>"+ptadd+"<br>"+"Email: "+ptemail+"<br>Cell: "+ptcell;
-			// document.getElementById("contact_info").innerHTML = patientContactInfo;
-			
-			
 		});
 		// getting the email from the patient's demographic data page
 		function getPatientEmail(){

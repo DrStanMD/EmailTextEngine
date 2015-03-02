@@ -31,7 +31,6 @@ function openForm(formName){
   var pathArray = window.location.pathname.split( '/' );
   var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformslistadd.jsp?demographic_no="+demoNo;
   var eFormListWindow = window.open(newURL);
-  var consentFormWindow;
 
   eFormListWindow.addEventListener("load", function(){
     //2) find all <a> elements
@@ -40,7 +39,7 @@ function openForm(formName){
       var a = a_array[i];
       //3)find the first <a> element that has the formName in its innerHTML
       if(a.innerHTML.indexOf(formName)>-1){
-        //4) click that <a> then close this window
+        //4) parse the FID and open the eForm
         var fidRe = /efmformadd_data\.jsp\?fid=(\d*)&/;
         var actionScript = a.getAttribute("onclick");
         var myArray;
@@ -48,7 +47,7 @@ function openForm(formName){
           fid = myArray[1];
           newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformadd_data.jsp?fid="+fid+"&demographic_no="+demoNo;
           this.close();
-          consentFormWindow= window.open(newURL);
+          window.open(newURL);
         }
       }
     }
