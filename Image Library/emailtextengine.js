@@ -12,17 +12,7 @@ window.addEventListener("load",function(){
 });
 
 function openConsentForm(){
-  debugger;
-  // var consentFormWindow = openForm("Email Text Consent Form");
   openFid(fid);
-
-  // var fidClock = setInterval(function(){
-  //   if(fid!==null){
-  //     console.log(fid);   
-  //     // consentFormWindow.close();   
-  //     clearInterval(fidClock);
-  //   }
-  // }, 100);
 }
 
 function openFid(fid, destination){
@@ -63,20 +53,15 @@ function openForm(formName){
       }
     }
   }, false);
- // return eFormListWindow;
- // return consentFormWindow;
 }
 
 function findFID(formName){
   var pathArray = window.location.pathname.split( '/' );
   var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformslistadd.jsp?demographic_no="+demoNo;
   var eFormListWindow = window.open(newURL, "hiddenWin");
-  //var consentFormWindow;
-
-  //eFormListWindow.addEventListener("load", function(){
-    document.getElementById("hiddenWin").onload = function(){
+  
+  document.getElementById("hiddenWin").onload = function(){
     //2) find all <a> elements
-    //var a_array = this.document.links;
     var a_array = document.getElementById("hiddenWin").contentDocument.links;
     for(var i=0;i<a_array.length;i++){
       var a = a_array[i];
@@ -88,37 +73,13 @@ function findFID(formName){
         var myArray;
         if((myArray = fidRe.exec(actionScript))!== null){
           fid = myArray[1];
-          //newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformadd_data.jsp?fid="+fid+"&demographic_no="+demoNo;
-          //this.close();
           if(ecnt==null){
             getECNTMeasurement();
           }
-          // consentFormWindow= window.open(newURL);
-          // consentFormWindow.close();
         }
       }
     }
-  //}, false);
-}
-
-  // xmlhttp= new XMLHttpRequest();
-  // var pathArray = window.location.pathname.split( '/' );
-  // var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/efmformslistadd.jsp?demographic_no="+demoNo;
-  // xmlhttp.onreadystatechange=function(){
-  //   if (xmlhttp.readyState==4 && xmlhttp.status==200){
-  //     var str=xmlhttp.responseText; //local variable
-  //     console.log(str);
-  //     if (!str) { return; }
-  //     var myRe = new RegExp("efmformadd_data\.jsp\?fid=(\d*)&demographic_no.*\n\s*"+formName,"i");  //for the measurement
-  //     var myArray;
-  //     myArray = myRe.exec(str);
-  //     if(myArray!==null){
-  //       fid = myArray[1];
-  //     }
-  //   }
-  // }
-  // xmlhttp.open("GET",newURL,false);
-  // xmlhttp.send();
+  }
 }
 
 // sending an email through Mandrill, needs an API key from www.mandrill.com
@@ -296,16 +257,7 @@ function startETEngine(){
   
   findFID("Email Text Consent Form");
   
-  //getECNTMeasurement();
-  // while(fid==null){
-  //   setTimeout(function(){},100);
-  // }
-  //console.log(fid);
   getPatientEmailAndText();
-  //getECNTMeasurement();
-
-  
-
   initiated = true;
 }
 
@@ -332,39 +284,12 @@ function textConsented(){
 
 // getting the measurement value by visiting the http://__/__/oscarEncounter/oscarMeasurements/SetupDisplayHistory.do?type=ECNT page
 function getECNTMeasurement(){
-  //var emailConsent;
-
   var consentWindow = openFid(fid, "hiddenWin2");
-  
-  //consentWindow.addEventListener("load", function(){
-    document.getElementById("hiddenWin2").onload = function(){
+  document.getElementById("hiddenWin2").onload = function(){
     ecnt = consentWindow.document.getElementById("consent_measurement").value;
     console.log("ecnt: "+ecnt);
     changeButtons();
-    //this.close();
- // }, false);
-}
-
-  // var xmlhttp= new XMLHttpRequest();
-  // var pathArray = window.location.pathname.split( '/' );
-  // var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/oscarEncounter/oscarMeasurements/SetupDisplayHistory.do?type=ECNT";
-  // xmlhttp.onreadystatechange=function(){
-  //   if (xmlhttp.readyState==4 && xmlhttp.status==200){
-  //     var str=xmlhttp.responseText; 
-  //     if (!str) { return; }
-
-  //     // this method relies on the most current ECNT value being in the first <td width="10">___</td> tag on the page
-  //     var myRe = /<td width="10">(.*)<\/td>/;  
-  //     var myArray;
-  //     var i=0;
-  //     if((myArray = myRe.exec(str))!== null){
-  //       emailConsent = myArray[1];
-  //     }   
-  //   }
-  // }
-  // xmlhttp.open("GET",newURL,false);
-  // xmlhttp.send();
-  // ecnt = emailConsent;
+  }
 }
 
 function changeButtons(){
