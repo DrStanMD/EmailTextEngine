@@ -252,11 +252,17 @@
 		}
 			// finding the demographic number for the current patient by looking in the URL of this lab form
 		function findDemoNo(){
-			var myRe = /demographic_no=(\d*)&/g;
-			var myArray = myRe.exec(window.location);
-			console.log("window location"+window.location);
-			var demoNo = myArray[1];
-			return demoNo;
+			  var myRe0 = /demographic_no=(\d*)[&$]/g;
+			  var myRe1 = /demographicNo=(\d*)[&$]/g;
+			  var myRe2 = /demo=(\d*)[&$]/g;
+			  var results0 = myRe0.exec(document.URL);
+			  var results1 =  myRe1.exec(document.URL);
+			  var results2 =  myRe2.exec(document.body.innerHTML);
+
+			  var myArray = results0 || results1 || results2;
+
+			  demoNo = myArray[1];
+			  return demoNo;
 		}
 	</script>
 </head>
