@@ -3,8 +3,10 @@
 // @namespace   http://dev.drbillylin.com/oscarwiki
 // @description Puts Email and Text buttons to Lab Report
 // @include     */lab/CA/ALL/labDisplay.jsp*
-// @version     4
+// @version     4.1
 // @grant       none
+// @updateURL	https://github.com/linbilly/EmailTextEngine/raw/master/GreaseMonkey/LabResultEmailer.user.js
+// @downloadURL	https://github.com/linbilly/EmailTextEngine/raw/master/GreaseMonkey/LabResultEmailer.user.js
 // ==/UserScript==
 
 // THIS PUTS THE emailtextengine.js IMAGE IN THE <HEAD> SECTION, WHICH ALLOWS FOR THE sendEmail(subject, body), sendText(body), and openForm() FUNCTIONS
