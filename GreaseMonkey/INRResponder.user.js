@@ -3,7 +3,7 @@
 // @namespace   http://dev.drbillylin.com/oscarwiki
 // @description	Enables tickler-based INR management system including ENEngine-based email and texting
 // @include     */lab/CA/ALL/labDisplay.jsp*
-// @version     4.0
+// @version     4.1
 // @grant		none
 // @author		Billy Lin
 // @updateURL	https://github.com/linbilly/EmailTextEngine/raw/master/GreaseMonkey/INRResponder.user.js
@@ -56,7 +56,6 @@ window.addEventListener("load",function(){
 		var th3 = document.createElement("td");
 		th3.id = "INRResponder_inputs";
 
-
 		var text1 = document.createTextNode("Current INR: ");
 
 		// value of current INR
@@ -97,7 +96,6 @@ window.addEventListener("load",function(){
 			handleLab('acknowledgeForm', segmentID, 'ackLab');
 		};
 
-
 		//send an email to patient
 		var emailButton = document.createElement("input");
 		emailButton.type = "button";
@@ -119,7 +117,6 @@ window.addEventListener("load",function(){
 			sendText(message);
 		};
 
-
 		var consentButton = document.createElement("input");
 		consentButton.type = "button";
 		consentButton.value = "Update Consent";
@@ -128,9 +125,6 @@ window.addEventListener("load",function(){
 		consentButton.onclick = function(){
 			openConsentForm();
 		};
-
-
-
 
 		th1.appendChild(text1);
 		th1.appendChild(currentINR);
@@ -149,10 +143,6 @@ window.addEventListener("load",function(){
 		tr.appendChild(th3);
 
 		table.appendChild(tr);
-
-		
-
-		
 
 		//adding past tickler INR messages to the table
 		for (i=0; i<messagesArray.length; i++){
@@ -239,7 +229,6 @@ window.addEventListener("load",function(){
 				}
 			}
 		}
-
 		xmlhttp.open("GET",newURL,false);
 		xmlhttp.send();
 	}
