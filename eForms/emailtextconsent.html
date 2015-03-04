@@ -319,7 +319,7 @@
 				<tr>
 					<td class="subjectline">
 						Subject: <input name="subject" size="40" type="text">
-						<input value="Submit" name="SubmitButton" type="submit">
+						<input value="Submit" name="SubmitButton" onclick="javascript:document.FormName.submit();" type="button">
 						<input value="Reset" name="ResetButton" type="reset">
 						<input value="Print" name="PrintButton" onclick="javascript:window.print()" type="button">
 						<input value="Print and Submit" name="PrintSubmitButton" onclick="javascript:window.print();setTimeout('document.FormName.submit()',1000);" type="button">
