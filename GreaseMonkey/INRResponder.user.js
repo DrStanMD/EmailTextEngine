@@ -6,7 +6,7 @@
 // @version     4.1
 // @grant		none
 // @author		Billy Lin
-// @updateURL	https://github.com/linbilly/EmailTextEngine/raw/master/GreaseMonkey/INRResponder.user.js
+// @updateURL	https://github.com/linbilly/EmailTextEngine/raw/master/GreaseMonkey/INRResponder.meta.js
 // @downloadURL	https://github.com/linbilly/EmailTextEngine/raw/master/GreaseMonkey/INRResponder.user.js
 // ==/UserScript==
 
