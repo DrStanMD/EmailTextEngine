@@ -34,6 +34,7 @@ window.addEventListener("load",function(){
 	emailButton.onclick = function(){
 		var message = document.getElementById("MessageBox").value;
 		sendEmail("Email from your Family Doctor", message);
+		document.getElementsByTagName("textarea")[1].value += '\nEmail sent to patient:\n'+message;
 	};
 
 	var textButton = document.createElement("input");
@@ -44,6 +45,7 @@ window.addEventListener("load",function(){
 	textButton.onclick = function(){
 		var message = document.getElementById("MessageBox").value;
 		sendText(message);
+		document.getElementsByTagName("textarea")[1].value += '\nText sent to patient:\n'+message;
 	};
 
 	var consentButton = document.createElement("input");
@@ -54,7 +56,7 @@ window.addEventListener("load",function(){
 	consentButton.onclick = function(){
 		openConsentForm();
 	};
-
+	
 	var textArea = document.createElement("textarea");
 	textArea.id = "MessageBox";
 	textArea.value = "Message to email or text";
