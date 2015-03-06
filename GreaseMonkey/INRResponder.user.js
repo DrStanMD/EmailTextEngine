@@ -3,7 +3,7 @@
 // @namespace   http://dev.drbillylin.com/oscarwiki
 // @description	Enables tickler-based INR management system including ENEngine-based email and texting
 // @include     */lab/CA/ALL/labDisplay.jsp*
-// @version     4.1
+// @version     4.2
 // @grant		none
 // @author		Billy Lin
 // @updateURL	https://github.com/linbilly/EmailTextEngine/raw/master/GreaseMonkey/INRResponder.meta.js
@@ -96,6 +96,16 @@ window.addEventListener("load",function(){
 			handleLab('acknowledgeForm', segmentID, 'ackLab');
 		};
 
+		//BillButton
+		var billButton = document.createElement("input");
+	   	billButton.type= 'button';
+	   	billButton.name= 'BillButton';
+	   	billButton.value='Bill INR';
+	   	billButton.onclick= function(){
+	   		billFor('00043', '286');
+		};
+
+		//EmailTextEngine enabled communication tools
 		//send an email to patient
 		var emailButton = document.createElement("input");
 		emailButton.type = "button";
@@ -137,6 +147,7 @@ window.addEventListener("load",function(){
 		th3.appendChild(emailButton);
 		th3.appendChild(textButton);
 		th3.appendChild(consentButton);		
+		th3.appendChild(billButton);
 
 		tr.appendChild(th1);
 		tr.appendChild(th2);
@@ -188,7 +199,8 @@ window.addEventListener("load",function(){
 	}
 
 	function initialize(){
-		findDemoNo();
+		demoNo = getDemoNo();
+		//findDemoNo();
 		getTicklerMessages();
 		getCurrentINR();
 		getSegmentID();
@@ -228,17 +240,78 @@ window.addEventListener("load",function(){
 					i=i+1;
 				}
 			}
-		}
+		};
 		xmlhttp.open("GET",newURL,false);
 		xmlhttp.send();
 	}
 
 	// finding the demographic number for the current patient by looking in the URL of this lab form
-	function findDemoNo(){
-		var myRe = /demo=(\d*)&/i;
-		var myArray = myRe.exec(tblDiscs.innerHTML);
-		demoNo = myArray[1];
-		return demoNo;
+	// function findDemoNo(){
+	// 	var myRe = /demo=(\d*)&/i;
+	// 	var myArray = myRe.exec(tblDiscs.innerHTML);
+	// 	demoNo = myArray[1];
+	// 	return demoNo;
+	// }
+
+	function billFor(billcode, icd9code){
+		getPatientName();
+		//Bill Button Script
+		//URL to billing page
+		 var elements = (window.location.pathname.split('/', 2));
+	     firstElement = (elements.slice(1) );
+	     var vPath = ("https://" + location.host + "/" + firstElement);
+	     //Find provider number
+		 var myParam = location.search.split('providerNo=')[1];
+	     var res2 = myParam.indexOf("&");
+	     var provider_no = myParam.substring(0,res2);
+		 
+		 //Find todays date
+		 var d = new Date();
+	     curr_date = d.getDate();
+	     curr_month = d.getMonth();
+	     curr_year = d.getFullYear();
+	     var todaysDate = curr_year+"-"+curr_month+"-"+curr_date;
+
+	    var billPath = vPath + "/billing.do?billRegion=BC&billForm=GP&hotclick=&appointment_no=0&demographic_name="+patientLastName+"%2C"+patientFirstName+"&demographic_no="+demoNo+"&providerview=1&user_no="+provider_no+"&apptProvider_no="+provider_no+"&appointment_date="+todaysDate+"&start_time=0:00&bNewForm=1&status=t" ;
+        var billWindow = window.open(billPath);
+        billWindow.addEventListener("load", function(){
+	        billWindow.document.getElementsByName('xml_other1')[0].value = billcode; 
+		    billWindow.document.getElementsByName('xml_diagnostic_detail1')[0].value = icd9code;
+		    billWindow.document.getElementsByName('Submit')[0].click();
+		},false);
+	}
+
+    var patientLastName;
+	var patientFirstName;
+
+	//Find patient name from demographic page
+	function getPatientName(){
+
+		xmlhttp= new XMLHttpRequest();
+		var pathArray = window.location.pathname.split( '/' );
+		var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/demographic/demographiccontrol.jsp?displaymode=edit&dboperation=search_detail&demographic_no="+demoNo;
+		xmlhttp.onreadystatechange=function(){
+			if (xmlhttp.readyState==4 && xmlhttp.status==200){
+				var str=xmlhttp.responseText; 
+				if (!str) { return; }
+				
+				var myRe = /Last Name:<\/span>\n\s*<span class="info">(.*)<\/span>/i;  				
+				var myArray;
+				if((myArray = myRe.exec(str))!== null){
+					patientLastName = myArray[1];
+					console.log(patientLastName);
+				} 
+				
+                var myRe2 = /First Name:<\/span>\n\s*<span class="info">(.*)<\/span>/i;  				
+				var myArray2;
+				if((myArray2 = myRe2.exec(str))!== null){
+				    patientFirstName = myArray2[1];
+					console.log(patientFirstName);
+				}				
+			}
+		};
+		xmlhttp.open("GET",newURL,false);
+		xmlhttp.send();
 	}
 
 }, false);
