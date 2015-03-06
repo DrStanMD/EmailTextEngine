@@ -81,7 +81,7 @@ function findFID(formName){
         }
       }
     }
-  }
+  };
 }
 
 // sending an email through Mandrill, needs an API key from www.mandrill.com
@@ -112,7 +112,7 @@ function sendEmail(newsubject, newbody){
   };
   m.messages.send(params, function(res){
     if (res[0]["status"]=="sent"){      //email successfully sent
-      alert("Email sent to "+patientEmail+". Message: "+newbody);
+      messageSent(newbody);
     }
   }, function(err){                     //email could not be sent
     console.log(err);
@@ -171,6 +171,20 @@ function sendText(body){
   document.body.appendChild(hiddenFrame);
 
   form.submit();
+  messageSent(body);
+}
+
+function messageSent(message){
+  var copyToEncounter = confirm("Message sent: "+message+"\nCopy to encounter note?");
+  if(copyToEncounter){
+    var pathArray = window.location.pathname.split( '/' );
+    var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/casemgmt/forward.jsp?action=view&demographicNo=26821"+demoNo;
+    var encounterWindow = window.open(newURL);
+    encounterWindow.addEventListener('load', function(){
+      var activeNote = this.document.getElementById("caseNote_note0");
+      activeNote.value += message;
+    }, false);
+  }
 }
 
 // getting the email and cellphone from the patient's demographic data page https://___/___//demographic/demographiccontrol.jsp?displaymode=edit&dboperation=search_detail&demographic_no=____"
@@ -193,7 +207,7 @@ function getPatientEmailAndText(){
         patientCell = makeTwilioFriendly(myArray[1]);
       }
     }
-  }
+  };
   xmlhttp.open("GET",newURL,false);
   xmlhttp.send();
 }
@@ -264,7 +278,7 @@ function startETEngine(){
 
 // if the ecnt value is "email" or "both", then the patient has consented to receive emails
 function emailConsented(){
-  if(ecnt==null||!ecnt.length>0)
+  if(ecnt==null||ecnt.length==0)
     return false;
   if(ecnt.indexOf("email")>-1||ecnt.indexOf("both")>-1)
     return true;
@@ -274,7 +288,7 @@ function emailConsented(){
 
 // if the ecnt value is "text" or "both", then the patient has consented to receive texts
 function textConsented(){
-  if(ecnt==null||!ecnt.length>0)
+  if(ecnt==null||ecnt.length==0)
     return false;
   if(ecnt.indexOf("text")>-1||ecnt.indexOf("both")>-1)
     return true;
@@ -290,7 +304,7 @@ function getECNTMeasurement(){
     ecnt = consentWindow.document.getElementById("consent_measurement").value;
     // after getting the ECNT measurement, we can change the EmailTextEngine buttons
     changeButtons();
-  }
+  };
 }
 
 function changeButtons(){
