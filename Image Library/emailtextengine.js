@@ -176,13 +176,22 @@ function sendText(body){
 
 function messageSent(message){
   var copyToEncounter = confirm("Message sent: "+message+"\nCopy to encounter note?");
+
   if(copyToEncounter){
+    var activeNote = document.getElementsByName("caseNote_note")[0];
+    if(activeNote!==null&&activeNote!==undefined){
+      activeNote.value += message;
+      return;
+    }
     var pathArray = window.location.pathname.split( '/' );
-    var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/casemgmt/forward.jsp?action=view&demographicNo=26821"+demoNo;
+    var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/casemgmt/forward.jsp?action=view&demographicNo="+demoNo;
     var encounterWindow = window.open(newURL);
     encounterWindow.addEventListener('load', function(){
-      var activeNote = this.document.getElementById("caseNote_note0");
-      activeNote.value += message;
+      setTimeout(function(){
+        debugger;
+        var activeNote = encounterWindow.document.getElementsByName("caseNote_note")[0];
+        activeNote.value += message;
+      },3000);
     }, false);
   }
 }
