@@ -190,11 +190,9 @@
 		}
 
 		window.addEventListener("load",function(){
-			console.log("loaded");
 
 			//if there was a previous consent, check the right radio button accordingly
 			var prevConsent = document.getElementById("consent_measurement").value;
-			console.log(prevConsent);
 			if(prevConsent!==null && prevConsent.length>0){
 				if(prevConsent=="email"){
 					document.getElementById("email_consented").setAttribute("checked", true);
@@ -228,7 +226,6 @@
 					var i=0;
 					if((myArray = myRe.exec(str))!== null){
 						patientEmail = myArray[1];
-						console.log(patientEmail);
 					}		
 				}
 			}
