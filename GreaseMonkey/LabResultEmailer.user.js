@@ -9,6 +9,11 @@
 // @downloadURL	https://github.com/linbilly/EmailTextEngine/raw/master/GreaseMonkey/LabResultEmailer.user.js
 // ==/UserScript==
 
+// READ ME
+// 1. emailtextengine.js IS REQUIRED IN THE OSCAR IMAGE DIRECTORY FOR THE EMAIL AND TEXT BUTTONS TO WORK
+// 2. Do NOT change the first chunk of code that puts emailtextengine.js in the <head> section
+// 3. Use "EmailButton", "TextButton", and "ConsentButton" as the ID's for the 3 buttons
+
 // THIS PUTS THE emailtextengine.js IMAGE IN THE <HEAD> SECTION, WHICH ALLOWS FOR THE sendEmail(subject, body), sendText(body), and openForm() FUNCTIONS
 var head = document.getElementsByTagName("head")[0];
 var script = document.createElement('script');
@@ -19,8 +24,7 @@ script.src = newURL;
 head.appendChild(script);
 
 window.addEventListener("load",function(){
-	console.log("window loaded");
-
+	
 	var destination = document.getElementsByClassName("MainTableBottomRowRightColumn")[0].children[0].children[0].children[0];
 
 	var openButton = document.createElement("input");
@@ -76,7 +80,7 @@ window.addEventListener("load",function(){
 	textArea.setAttribute("cols", "50");
 	textArea.setAttribute("rows", "2");
 	textArea.style.display = "none";
-	textArea.onclick = function(){this.value=""};
+	textArea.onclick = function(){this.value="";};
 
 	var newDestination = document.getElementById("acknowledgeForm");
 	newDestination.appendChild(textArea);

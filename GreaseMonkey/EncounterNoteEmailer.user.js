@@ -14,16 +14,16 @@
 // 2. Do NOT change the first chunk of code that puts emailtextengine.js in the <head> section
 // 3. Use "EmailButton", "TextButton", and "ConsentButton" as the ID's for the 3 buttons
 
-window.addEventListener("load",function(){
+// THIS PUTS THE emailtextengine.js IMAGE IN THE <HEAD> SECTION, WHICH ALLOWS FOR THE sendEmail(subject, body), sendText(body), and openForm() FUNCTIONS
+var head = document.getElementsByTagName("head")[0];
+var script = document.createElement('script');
+script.type = 'text/javascript';
+var pathArray = window.location.pathname.split( '/' );
+var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/displayImage.do?imagefile=emailtextengine.js";
+script.src = newURL; 
+head.appendChild(script);
 
-	// THIS PUTS THE emailtextengine.js IMAGE IN THE <HEAD> SECTION, WHICH ALLOWS FOR THE sendEmail(subject, body), sendText(body), and openForm() FUNCTIONS
-	var head = document.getElementsByTagName("head")[0];
-	var script = document.createElement('script');
-	script.type = 'text/javascript';
-	var pathArray = window.location.pathname.split( '/' );
-	var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/eform/displayImage.do?imagefile=emailtextengine.js";
-	script.src = newURL; 
-	head.appendChild(script);
+window.addEventListener("load",function(){
 
 	// You should keep most of the code for the buttons the way they are
 	var emailButton = document.createElement("input");
@@ -62,7 +62,7 @@ window.addEventListener("load",function(){
 	textArea.value = "Message to email or text";
 	textArea.setAttribute("cols", "30");
 	textArea.setAttribute("rows", "10");
-	textArea.onclick = function(){this.value=""};
+	textArea.onclick = function(){this.value="";};
 
 	// This is where the buttons are going on the webpage
 	var destination = document.getElementById("rightNavBar");
@@ -71,8 +71,4 @@ window.addEventListener("load",function(){
 	destination.appendChild(textButton);
 	destination.appendChild(consentButton);
 
-	// DO NOT EDIT THE BOTTOM CHUNK OF CODE UNLESS YOU ARE SURE ABOUT IT
-	setTimeout(function(){
-		startETEngine();
-	}, 1000);
 }, false);
