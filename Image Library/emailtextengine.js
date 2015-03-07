@@ -112,7 +112,7 @@ function sendEmail(newsubject, newbody){
   };
   m.messages.send(params, function(res){
     if (res[0]["status"]=="sent"){      //email successfully sent
-      messageSent(newbody);
+      messageSent("Message: "+newbody+" emailed to "+patientEmail);
     }
   }, function(err){                     //email could not be sent
     console.log(err);
@@ -171,11 +171,11 @@ function sendText(body){
   document.body.appendChild(hiddenFrame);
 
   form.submit();
-  messageSent(body);
+  messageSent("Message: \""+body+"\" texted to "+patientCell);
 }
 
 function messageSent(message){
-  var copyToEncounter = confirm("Message sent: "+message+"\nCopy to encounter note?");
+  var copyToEncounter = confirm(message+"\nCopy to encounter note?");
 
   if(copyToEncounter){
     var activeNote = document.getElementsByName("caseNote_note")[0];
@@ -188,7 +188,6 @@ function messageSent(message){
     var encounterWindow = window.open(newURL);
     encounterWindow.addEventListener('load', function(){
       setTimeout(function(){
-        debugger;
         var activeNote = encounterWindow.document.getElementsByName("caseNote_note")[0];
         activeNote.value += message;
       },3000);
