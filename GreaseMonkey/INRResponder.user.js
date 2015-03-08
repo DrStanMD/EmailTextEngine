@@ -257,27 +257,27 @@ window.addEventListener("load",function(){
 		getPatientName();
 		//Bill Button Script
 		//URL to billing page
-		 var elements = (window.location.pathname.split('/', 2));
-	     firstElement = (elements.slice(1) );
-	     var vPath = ("https://" + location.host + "/" + firstElement);
-	     //Find provider number
-		 var myParam = location.search.split('providerNo=')[1];
-	     var res2 = myParam.indexOf("&");
-	     var provider_no = myParam.substring(0,res2);
-		 
-		 //Find todays date
-		 var d = new Date();
-	     curr_date = d.getDate();
-	     curr_month = d.getMonth();
-	     curr_year = d.getFullYear();
-	     var todaysDate = curr_year+"-"+curr_month+"-"+curr_date;
+		var elements = (window.location.pathname.split('/', 2));
+		firstElement = (elements.slice(1) );
+		var vPath = ("https://" + location.host + "/" + firstElement);
+		//Find provider number
+		var myParam = location.search.split('providerNo=')[1];
+		var res2 = myParam.indexOf("&");
+		var provider_no = myParam.substring(0,res2);
 
-	    var billPath = vPath + "/billing.do?billRegion=BC&billForm=GP&hotclick=&appointment_no=0&demographic_name="+patientLastName+"%2C"+patientFirstName+"&demographic_no="+demoNo+"&providerview=1&user_no="+provider_no+"&apptProvider_no="+provider_no+"&appointment_date="+todaysDate+"&start_time=0:00&bNewForm=1&status=t" ;
-        var billWindow = window.open(billPath);
-        billWindow.addEventListener("load", function(){
-	        billWindow.document.getElementsByName('xml_other1')[0].value = billcode; 
-		    billWindow.document.getElementsByName('xml_diagnostic_detail1')[0].value = icd9code;
-		    billWindow.document.getElementsByName('Submit')[0].click();
+		//Find todays date
+		var d = new Date();
+		curr_date = d.getDate();
+		curr_month = d.getMonth();
+		curr_year = d.getFullYear();
+		var todaysDate = curr_year+"-"+curr_month+"-"+curr_date;
+
+		var billPath = vPath + "/billing.do?billRegion=BC&billForm=GP&hotclick=&appointment_no=0&demographic_name="+patientLastName+"%2C"+patientFirstName+"&demographic_no="+demoNo+"&providerview=1&user_no="+provider_no+"&apptProvider_no="+provider_no+"&appointment_date="+todaysDate+"&start_time=0:00&bNewForm=1&status=t" ;
+		var billWindow = window.open(billPath);
+		billWindow.addEventListener("load", function(){
+			billWindow.document.getElementsByName('xml_other1')[0].value = billcode; 
+			billWindow.document.getElementsByName('xml_diagnostic_detail1')[0].value = icd9code;
+			billWindow.document.getElementsByName('Submit')[0].click();
 		},false);
 	}
 
