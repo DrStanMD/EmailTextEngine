@@ -21,16 +21,12 @@ head.appendChild(script);
 
 window.addEventListener("load",function(){
 
-	console.log("window loaded");
-
 	var tblDiscs = document.getElementById("tblDiscs");
-	console.log(tblDiscs);
 	var preElements = document.getElementsByTagName("pre");
 	var pretags;
 	for(var i=0; i<preElements.length; i++){
 		pretags+=preElements[i].innerHTML;
 	}
-	console.log(pretags);
 	var demoNo;
 
 	var messagesArray = [];
@@ -42,8 +38,6 @@ window.addEventListener("load",function(){
 
 	// check to see if there is actually an INR result in this lab form, continue with INRResponder if there is
 	if(pretags!==null &&pretags.indexOf("INR")>-1){
-
-		console.log("INR found on this lab");
 
 		initialize();
 
@@ -98,11 +92,11 @@ window.addEventListener("load",function(){
 
 		//BillButton
 		var billButton = document.createElement("input");
-	   	billButton.type= 'button';
-	   	billButton.name= 'BillButton';
-	   	billButton.value='Bill INR';
-	   	billButton.onclick= function(){
-	   		billFor('00043', '286');
+		billButton.type= 'button';
+		billButton.name= 'BillButton';
+		billButton.value='Bill INR';
+		billButton.onclick= function(){
+			billFor('00043', '286');
 		};
 
 		//EmailTextEngine enabled communication tools
@@ -191,10 +185,9 @@ window.addEventListener("load",function(){
 		var ticklerWindow = window.open(newURL);
 
 		ticklerWindow.addEventListener("load", function(){
-			console.log(ticklerWindow);
-		    var ticklerTA = this.document.getElementsByName("textarea")[0];
-		    ticklerTA.value = message;
-	  	}, false);
+			var ticklerTA = this.document.getElementsByName("textarea")[0];
+			ticklerTA.value = message;
+		}, false);
 
 	}
 
@@ -281,7 +274,7 @@ window.addEventListener("load",function(){
 		},false);
 	}
 
-    var patientLastName;
+	var patientLastName;
 	var patientFirstName;
 
 	//Find patient name from demographic page
@@ -299,14 +292,12 @@ window.addEventListener("load",function(){
 				var myArray;
 				if((myArray = myRe.exec(str))!== null){
 					patientLastName = myArray[1];
-					console.log(patientLastName);
 				} 
 				
-                var myRe2 = /First Name:<\/span>\n\s*<span class="info">(.*)<\/span>/i;  				
+				var myRe2 = /First Name:<\/span>\n\s*<span class="info">(.*)<\/span>/i;  				
 				var myArray2;
 				if((myArray2 = myRe2.exec(str))!== null){
-				    patientFirstName = myArray2[1];
-					console.log(patientFirstName);
+					patientFirstName = myArray2[1];
 				}				
 			}
 		};
