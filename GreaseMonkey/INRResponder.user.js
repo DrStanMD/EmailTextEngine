@@ -188,7 +188,6 @@ window.addEventListener("load",function(){
 			var ticklerTA = this.document.getElementsByName("textarea")[0];
 			ticklerTA.value = message;
 		}, false);
-
 	}
 
 	function initialize(){
@@ -279,7 +278,6 @@ window.addEventListener("load",function(){
 
 	//Find patient name from demographic page
 	function getPatientName(){
-
 		xmlhttp= new XMLHttpRequest();
 		var pathArray = window.location.pathname.split( '/' );
 		var newURL = window.location.protocol + "//" + window.location.host +"/"+pathArray[1]+"/demographic/demographiccontrol.jsp?displaymode=edit&dboperation=search_detail&demographic_no="+demoNo;
